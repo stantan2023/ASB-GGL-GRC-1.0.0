@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd                            http://camel.apache.org/schema/blueprint https://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <bean class="tr.com.anadolubank.esb.ASBGGLGRCRequestProcessor" id="ASBGGLGRCRequestProcessor"/>
+    <bean class="tr.com.anadolubank.esb.ASBGGLGRCResponseProcessor" id="ASBGGLGRCResponseProcessor"/>
+    <camelContext id="_contextgRPC" xmlns="http://camel.apache.org/schema/blueprint">
+        <route id="_routegRPCClient">
+            <from id="_from1" uri="quartz2://myGroup/myTimerName?cron=0+0/1+*+?+*+*"/>
+            <log id="_logQuartz2" message="Quartz2 Started..."/>
+            <process id="_process1" ref="ASBGGLGRCRequestProcessor"/>
+            <to id="grpc_hello_client" uri="grpc://localhost:1101/tr.com.anadolubank.grpc.proto.HelloService?method=hello&amp;synchronous=true&amp;negotiationType=TLS&amp;keyCertChainResource=classpath:certs/client_certificate.pem&amp;keyResource=classpath:certs/client_private_key.key&amp;trustCertCollectionResource=classpath:certs/server_certificate.pem&amp;authenticationType=JWT&amp;jwtAlgorithm=HMAC256&amp;jwtSecret=TUNgUL5Bs8kjVvWnPYwPJhaM"/>
+            <process id="_process2" ref="ASBGGLGRCResponseProcessor"/>
+        </route>
+    </camelContext>
+</blueprint>
